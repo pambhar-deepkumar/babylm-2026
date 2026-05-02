@@ -47,13 +47,13 @@ the CFP — check the BabyLM Slack and GitHub.
 - **Early September 2026:** Camera-ready.
 - **24–29 October 2026:** Workshop @ EMNLP Budapest.
 
-## Track + RQ
+## Track + research questions
 
-See `../../../papers/analyses/00-trends-and-research-questions.md` (in the
-parent workspace repo) for the full reasoning. Working plan:
+Working plan, to be confirmed with the TA:
 
-- **Track:** Multilingual.
-- **RQs (tentative):** RQ7 (EN/NL/ZH ratio ablation) + RQ1 (causal:masked
-  ratio in GPT-BERT).
-
-To be confirmed with Lukas at the next Monday TA meeting.
+- **Track:** Multilingual (English / Dutch / Chinese).
+- **RQ1:** Ablate the EN/NL/ZH language ratio under a fixed 100M-token
+  Byte-Premium-adjusted budget; measure cross-lingual transfer to each
+  language's eval suite.
+- **RQ2:** Ablate the causal:masked ratio of GPT-BERT (2025 baseline ships
+  at roughly 1:7) in the multilingual setting.
