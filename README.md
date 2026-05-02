@@ -4,7 +4,7 @@ Submission for the [4th BabyLM Challenge](https://babylm.github.io/) at EMNLP 20
 
 **Team:** Deep Pambhar, Alessio Piroli, Nour Hadjfredj
 **TA:** Lukas
-**Track (tentative):** Multilingual (English / Dutch / Chinese)
+**Track:** Strict-Small (English, 10M words, 2026 detoxified corpus)
 
 ## Layout
 
@@ -21,23 +21,22 @@ large artefacts off the repo and on HuggingFace Hub or local scratch.
 ## Setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
-pip install -e .
+git clone --recursive git@github.com:pambhar-deepkumar/babylm-2026.git
+cd babylm-2026
+python -m venv .venv && source .venv/bin/activate
+make setup
 ```
 
-Add dependencies to `pyproject.toml` as the project grows.
+`make setup` initialises the eval submodule and installs all
+requirements. If you forgot `--recursive`, just run `make setup` — it
+handles the submodule.
 
-## Upstream BabyLM repos (clone as siblings or git submodules)
+## Evaluation
 
-| Repo | Purpose |
-|---|---|
-| [babylm/evaluation-pipeline-2025](https://github.com/babylm/evaluation-pipeline-2025) | Closest to the 2026 eval pipeline (2026 repo not yet released as of 2026-05-02). |
-| [babylm/baseline-pretraining](https://github.com/babylm/baseline-pretraining) | GPT-BERT and GPT-2 Small baseline training code. |
-| [babylm/babylm_data_preprocessing](https://github.com/babylm/babylm_data_preprocessing) | Official corpus preprocessing. |
-
-The 2026 evaluation pipeline and detoxified corpus drop "early April 2026" per
-the CFP — check the BabyLM Slack and GitHub.
+The official BabyLM 2026 evaluation pipeline is vendored as a git
+submodule at `third_party/babylm-eval/`, pinned to a specific commit so
+everyone runs the same eval. See [`docs/eval.md`](docs/eval.md) for how
+to score a checkpoint and how to bump the pinned version.
 
 ## Key dates
 
@@ -49,11 +48,6 @@ the CFP — check the BabyLM Slack and GitHub.
 
 ## Track + research questions
 
-Working plan, to be confirmed with the TA:
-
-- **Track:** Multilingual (English / Dutch / Chinese).
-- **RQ1:** Ablate the EN/NL/ZH language ratio under a fixed 100M-token
-  Byte-Premium-adjusted budget; measure cross-lingual transfer to each
-  language's eval suite.
-- **RQ2:** Ablate the causal:masked ratio of GPT-BERT (2025 baseline ships
-  at roughly 1:7) in the multilingual setting.
+- **Track:** Strict-Small (English, 10M words, 2026 detoxified corpus).
+- **Research questions:** TBD — to be agreed with the TA before the
+  first baseline is locked in.
