@@ -11,7 +11,7 @@ BACKEND="${2:-mlm}"
 TRACK="strict-small"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
-EVAL_DIR="$REPO_ROOT/third_party/babylm-eval/strict"
+EVAL_DIR="$REPO_ROOT/babylm-eval/strict"
 
 if [ ! -d "$EVAL_DIR/scripts" ]; then
   echo "Eval submodule missing at $EVAL_DIR — run: make setup" >&2

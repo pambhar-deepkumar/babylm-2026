@@ -1,3 +1,3 @@
-[submodule "third_party/babylm-eval"]
-	path = third_party/babylm-eval
+[submodule "babylm-eval"]
+	path = babylm-eval
 	url = https://github.com/babylm-org/babylm-eval.git
