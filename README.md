@@ -34,17 +34,9 @@ handles the submodule.
 ## Evaluation
 
 The official BabyLM 2026 evaluation pipeline is vendored as a git
-submodule at `third_party/babylm-eval/`, pinned to a specific commit so
-everyone runs the same eval. See [`docs/eval.md`](docs/eval.md) for how
-to score a checkpoint and how to bump the pinned version.
-
-## Key dates
-
-- **2026-05-25:** ARR submission deadline (skipping — too tight).
-- **Mid July 2026:** Direct OpenReview submission deadline (our target).
-- **Mid August 2026:** Decisions released.
-- **Early September 2026:** Camera-ready.
-- **24–29 October 2026:** Workshop @ EMNLP Budapest.
+submodule at `babylm-eval/`, pinned to a specific commit so everyone
+runs the same eval. See [`docs/eval.md`](docs/eval.md) for how to score
+a checkpoint and how to bump the pinned version.
 
 ## Track + research questions
 
