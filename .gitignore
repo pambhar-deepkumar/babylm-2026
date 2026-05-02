@@ -1,0 +1,47 @@
+# macOS / editors
+.DS_Store
+.vscode/
+.idea/
+*.swp
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+build/
+dist/
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+
+# Virtualenvs
+.venv/
+venv/
+env/
+
+# Secrets
+.env
+.env.*
+*.key
+
+# Big stuff that should never be committed
+data/
+models/
+checkpoints/
+results/raw/
+wandb/
+*.bin
+*.safetensors
+*.pt
+*.ckpt
+*.h5
+*.tar.gz
+*.zip
+
+# Jupyter
+.ipynb_checkpoints/
+
+# HuggingFace caches
+.cache/
+hf_cache/
