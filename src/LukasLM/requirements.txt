@@ -1,0 +1,16 @@
+# Core runtime
+torch>=2.1.0
+transformers>=4.40.0
+datasets>=2.18.0
+sentencepiece>=0.1.99
+numpy>=1.23
+tqdm>=4.66
+
+# LAMB optimizer (only needed for --lamb). Limited to Linux where wheels are available.
+bitsandbytes>=0.41.1; platform_system == "Linux"
+
+# Optional: experiment tracking (only if using --wandb)
+wandb>=0.16.0
+
+# Optional: FLOPs estimation (only if using --flops)
+fvcore>=0.1.5
