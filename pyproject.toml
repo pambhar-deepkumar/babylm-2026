@@ -9,11 +9,13 @@ authors = [
     { name = "Nour Hadjfredj" },
 ]
 dependencies = [
-    # Add as the project grows. Likely candidates:
-    # "torch",
-    # "transformers",
-    # "datasets",
-    # "accelerate",
+    "jupyter",
+    "pandas",
+    "matplotlib",
+    "datasets",
+    "requests",
+    "spacy",
+    "macro-etym @ git+https://github.com/JonathanReeve/macro-etym",
 ]
 
 [build-system]
