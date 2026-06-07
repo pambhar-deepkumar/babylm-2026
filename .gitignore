@@ -1,8 +1,9 @@
-# macOS / editors
+# macOS / editors / agents
 .DS_Store
 .vscode/
 .idea/
 *.swp
+.pi/
 
 # Python
 __pycache__/
