@@ -12,9 +12,13 @@ Safety:
     can confirm against `md5sum bb26_en.train` on the server that our base is
     byte-identical to Alex's trained Arm A.
 
-Output: data/bb26_simplified.train  (Arm B). scp it to the cluster's data/ dir.
+Output (scp to the cluster's data/ dir):
+  --variant simplify (default) -> data/bb26_simplified.train  (Arm B)
+  --variant register           -> data/bb26_register.train    (Arm C)
 
-Usage: PYTHONPATH=src python scripts/make_simplified_corpus.py
+Usage:
+  PYTHONPATH=src python scripts/make_simplified_corpus.py
+  PYTHONPATH=src python scripts/make_simplified_corpus.py --variant register
 """
 
 from __future__ import annotations
@@ -34,8 +38,18 @@ SNAP = glob.glob(
 # Concatenation order confirmed against the server's bb26_en.train (line 1 =
 # bnc_spoken, line 65221 = childes start; total 1,104,106 lines).
 ORDER = ["bnc_spoken", "childes", "gutenberg", "open_subtitles", "simple_wiki", "switchboard"]
-REWRITES = Path("data/derived/rewrites.jsonl")
-OUT = Path("data/bb26_simplified.train")
+# Per-variant rewrite source -> output corpus. simplify=Arm B, register=Arm C.
+REWRITES_MAP = {
+    "simplify": Path("data/derived/rewrites.jsonl"),
+    "register": Path("data/derived/rewrites_register.jsonl"),
+}
+OUT_MAP = {
+    "simplify": Path("data/bb26_simplified.train"),
+    "register": Path("data/bb26_register.train"),
+}
+# Set per --variant in main(); defaults preserve the original behaviour.
+REWRITES = REWRITES_MAP["simplify"]
+OUT = OUT_MAP["simplify"]
 
 TAG = re.compile(r"^(\*?[A-Za-z]{1,4}\d?:)\t?")
 WS = re.compile(r"\s+")
@@ -46,6 +60,17 @@ def clean(line: str) -> str:
 
 
 def main() -> None:
+    import argparse
+
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--variant", choices=REWRITES_MAP, default="simplify",
+                    help="which rewrites to assemble (simplify=Arm B, register=Arm C)")
+    args = ap.parse_args()
+    global REWRITES, OUT
+    REWRITES = REWRITES_MAP[args.variant]
+    OUT = OUT_MAP[args.variant]
+    print(f"variant: {args.variant}  ->  {OUT}")
+
     # Build swap map keyed by (source, line_idx) -> (stored_original, rewrite).
     swaps: dict[tuple[str, int], tuple[str, str]] = {}
     with open(REWRITES, encoding="utf-8") as fh:

@@ -9,11 +9,14 @@ Metrics: Flesch-Kincaid grade, Flesch reading ease, Latinate share (% of
 content words labelled Latinate vs Germanic, via the etymology labeller),
 mean words/line.
 
-Usage: PYTHONPATH=src python scripts/measure_simplification.py
+Usage:
+  PYTHONPATH=src python scripts/measure_simplification.py                   # Arm B
+  PYTHONPATH=src python scripts/measure_simplification.py --variant register  # Arm C
 """
 
 from __future__ import annotations
 
+import argparse
 import glob
 import json
 import os
@@ -31,8 +34,17 @@ SNAP = glob.glob(
     )
 )[0]
 ORDER = ["bnc_spoken", "childes", "gutenberg", "open_subtitles", "simple_wiki", "switchboard"]
-SIMPL = "data/bb26_simplified.train"
-REWRITES = "data/derived/rewrites.jsonl"
+# Per-variant rewrite source + assembled corpus. simplify=Arm B, register=Arm C.
+REWRITES_MAP = {
+    "simplify": "data/derived/rewrites.jsonl",
+    "register": "data/derived/rewrites_register.jsonl",
+}
+SIMPL_MAP = {
+    "simplify": "data/bb26_simplified.train",
+    "register": "data/bb26_register.train",
+}
+SIMPL = SIMPL_MAP["simplify"]       # set per --variant in main()
+REWRITES = REWRITES_MAP["simplify"]
 LABELS = "data/derived/etymology_labels_full.csv"
 FK_SAMPLE = 40000   # lines sampled for the whole-corpus readability means
 
@@ -80,6 +92,15 @@ def row(name, texts, lab):
 
 
 def main() -> None:
+    ap = argparse.ArgumentParser()
+    ap.add_argument("--variant", choices=REWRITES_MAP, default="simplify",
+                    help="which rewrites/corpus to measure (simplify=Arm B, register=Arm C)")
+    args = ap.parse_args()
+    global REWRITES, SIMPL
+    REWRITES = REWRITES_MAP[args.variant]
+    SIMPL = SIMPL_MAP[args.variant]
+    print(f"variant: {args.variant}  (rewrites={REWRITES})\n")
+
     lab = load_labels()
 
     # --- Intervention: the changed lines only (paired original -> rewrite) ---
@@ -93,6 +114,10 @@ def main() -> None:
     print(inter.to_string(index=False))
 
     # --- Whole corpus: original (reconstructed) vs simplified ---
+    if not os.path.exists(SIMPL):
+        print(f"\n(whole-corpus view skipped: {SIMPL} not assembled yet — "
+              f"run make_simplified_corpus.py --variant {args.variant})")
+        return
     original = []
     for src in ORDER:
         with open(f"{SNAP}{src}.train.txt", encoding="utf-8") as fh:
