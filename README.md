@@ -1,59 +1,97 @@
-# BabyLM 2026 — TUM LLM Practical Course
+# Register simplification and age-of-acquisition on the BabyLM 2026 corpus
 
-Submission for the [4th BabyLM Challenge](https://babylm.github.io/) at EMNLP 2026.
+Does lowering the **register/complexity** of the hardest text in a small pretraining corpus improve
+sample-efficient learning? This repo tests that on the [BabyLM 2026](https://babylm.github.io/)
+Strict-Small track (English, ~10M words) with a controlled A/B/C/D design where **only the register of
+the ~2.9% highest-complexity lines differs** between arms.
 
-**Team:** Deep Pambhar, Alessio Piroli, Nour Hadjfredj
-**TA:** Lukas
-**Track (tentative):** Multilingual (English / Dutch / Chinese)
+**Headline finding — the two evaluation axes dissociate:**
 
-## Layout
+- **Grammar (BLiMP): flat.** Lowering register buys no sample efficiency; the register dose-response is
+  flat (A 65.2, and the treatments land ~1–1.5 pt below baseline with no trend across dose).
+- **Lexical acquisition (AoA): a clean, monotonic dose-response.** Tracking per-word surprisal across
+  training on 67 matched Latinate/Germanic synonym pairs, the more Latinate vocabulary a corpus strips,
+  the worse the model learns those words — final Latinate−Germanic gap **A 2.22 < C (−5.5pp) 3.14 <
+  D (−18pp) 3.73 bits**, while Germanic words are unaffected.
+
+So the manipulation *provably* reshapes what the model learns at the vocabulary level; it just does not
+transfer to grammatical benefit. See [`docs/register-simplification-results.md`](docs/register-simplification-results.md)
+and [`results/aoa/ANALYSIS.md`](results/aoa/ANALYSIS.md) for the full write-ups.
+
+![AoA gap dose-response](figures/aoa_gap.png)
+
+## The arms
+
+Every arm starts from the same corpus; only the rewrite applied to the selected high-complexity lines
+differs (base reconstruction is byte-identical across arms).
+
+| Arm | Rewrite of the selected lines |
+|---|---|
+| A original | none (baseline corpus) |
+| B simplify | syntax + vocabulary → child-directed English |
+| C register (mild) | vocabulary only: Latinate → plain, structure/length fixed (−5.5pp Latinate) |
+| D register (aggressive) | vocabulary only, pushed hard (−18pp Latinate) |
+
+## Repository layout
 
 ```
-src/babylm_2026/   Python package — training, eval, data loading
-experiments/       Experiment configs and runnable scripts (one folder per RQ)
-notebooks/         Exploratory analysis
-paper/             Workshop paper (LaTeX or markdown drafts)
+src/babylm_2026/   etymology labeller (Germanic vs Latinate) + register probe
+scripts/           select → rewrite → assemble → measure → train → eval → AoA-harvest → plot
+notebooks/         exploratory analysis (corpus baseline, confound checks, swap dictionary)
+docs/              write-ups (methods, results, pivot rationale)
+results/aoa/       per-checkpoint surprisal CSVs, AoA figures, ANALYSIS.md
+figures/           generated figures
 ```
 
-`data/`, `models/`, `checkpoints/`, and `results/raw/` are gitignored — keep
-large artefacts off the repo and on HuggingFace Hub or local scratch.
+`data/`, `models/`, `checkpoints/`, weights, and `results/raw/` are gitignored — large artefacts stay
+off the repo.
 
 ## Setup
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+python -m venv .venv && source .venv/bin/activate
 pip install -e .
 ```
 
-Add dependencies to `pyproject.toml` as the project grows.
+## Data
 
-## Upstream BabyLM repos (clone as siblings or git submodules)
+The corpus is **not redistributed here** — obtain it from HuggingFace:
+[`BabyLM-community/BabyLM-2026-Strict-Small`](https://huggingface.co/datasets/BabyLM-community/BabyLM-2026-Strict-Small),
+and place the English strict-small `.train` file at `data/bb26_en.train`. Evaluation uses the
+[BabyLM evaluation pipeline](https://github.com/babylm/evaluation-pipeline-2025).
 
-| Repo | Purpose |
-|---|---|
-| [babylm/evaluation-pipeline-2025](https://github.com/babylm/evaluation-pipeline-2025) | Closest to the 2026 eval pipeline (2026 repo not yet released as of 2026-05-02). |
-| [babylm/baseline-pretraining](https://github.com/babylm/baseline-pretraining) | GPT-BERT and GPT-2 Small baseline training code. |
-| [babylm/babylm_data_preprocessing](https://github.com/babylm/babylm_data_preprocessing) | Official corpus preprocessing. |
+## Reproduce
 
-The 2026 evaluation pipeline and detoxified corpus drop "early April 2026" per
-the CFP — check the BabyLM Slack and GitHub.
+The rewrite step calls an LLM (Llama-3.3-70B via OpenRouter, ~$1.5 for the full corpus); the API key is
+read from the OS keychain at runtime and is never stored in the repo.
 
-## Key dates
+```bash
+# 1. select the high-complexity lines to rewrite
+python scripts/build_manifest.py
+# 2. rewrite them (--variant simplify = Arm B, register = Arm C/D)
+python scripts/rewrite_corpus.py --variant register
+# 3. assemble the arm corpus (base reconstruction is checksum-verified against the original)
+python scripts/make_simplified_corpus.py --variant register
+# 4. manipulation check (readability + Latinate-share shift)
+python scripts/measure_simplification.py
+# 5. train an arm from scratch (official 2026 GPT-2 recipe); train_traj.slurm adds AoA checkpoints
+python scripts/train_gpt2.py --train_file data/bb26_register.train --output_dir output/arm_c ...
+# 6. evaluate with the BabyLM eval pipeline (BLiMP headline)
+# 7. AoA: build the fixed probe set, harvest per-checkpoint surprisal, plot
+python scripts/build_aoa_probes.py --corpus data/bb26_en.train --k 30
+python scripts/harvest_surprisal.py --arm_dir output/traj_c --arm_name C --out results/aoa/traj_c_surprisal.csv
+python scripts/plot_aoa.py --indir results/aoa --outdir figures
+```
 
-- **2026-05-25:** ARR submission deadline (skipping — too tight).
-- **Mid July 2026:** Direct OpenReview submission deadline (our target).
-- **Mid August 2026:** Decisions released.
-- **Early September 2026:** Camera-ready.
-- **24–29 October 2026:** Workshop @ EMNLP Budapest.
+`scripts/*.slurm` are example [LRZ](https://doku.lrz.de/) job configs; adapt the partitions and
+environment to your cluster.
 
-## Track + research questions
+## License
 
-Working plan, to be confirmed with the TA:
+MIT — see [LICENSE](LICENSE).
 
-- **Track:** Multilingual (English / Dutch / Chinese).
-- **RQ1:** Ablate the EN/NL/ZH language ratio under a fixed 100M-token
-  Byte-Premium-adjusted budget; measure cross-lingual transfer to each
-  language's eval suite.
-- **RQ2:** Ablate the causal:masked ratio of GPT-BERT (2025 baseline ships
-  at roughly 1:7) in the multilingual setting.
+## Acknowledgments
+
+This is the data/register contribution of a three-person BabyLM 2026 group project (TUM LLM Practical
+Course). Alessio Piroli led the model/architecture front and Nour Hadjfredj the tokenizer front;
+this repository covers the corpus register-simplification and age-of-acquisition analysis.
