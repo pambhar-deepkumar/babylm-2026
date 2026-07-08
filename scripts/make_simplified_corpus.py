@@ -9,8 +9,8 @@ Safety:
     == the original we stored in rewrites.jsonl. Any mismatch aborts (a wrong
     line index can't silently corrupt the corpus).
   - Base checksum: also hashes the no-swap reconstruction and prints it, so we
-    can confirm against `md5sum bb26_en.train` on the server that our base is
-    byte-identical to Alex's trained Arm A.
+    can confirm against `md5sum bb26_en.train` that our base is byte-identical
+    to the original (unmodified) Arm A corpus.
 
 Output (scp to the cluster's data/ dir):
   --variant simplify (default) -> data/bb26_simplified.train  (Arm B)
@@ -42,10 +42,12 @@ ORDER = ["bnc_spoken", "childes", "gutenberg", "open_subtitles", "simple_wiki", 
 REWRITES_MAP = {
     "simplify": Path("data/derived/rewrites.jsonl"),
     "register": Path("data/derived/rewrites_register.jsonl"),
+    "register_strong": Path("data/derived/rewrites_register_strong.jsonl"),
 }
 OUT_MAP = {
     "simplify": Path("data/bb26_simplified.train"),
     "register": Path("data/bb26_register.train"),
+    "register_strong": Path("data/bb26_register_strong.train"),
 }
 # Set per --variant in main(); defaults preserve the original behaviour.
 REWRITES = REWRITES_MAP["simplify"]
@@ -82,7 +84,7 @@ def main() -> None:
     print(f"rewrites to apply: {len(swaps):,}")
 
     OUT.parent.mkdir(parents=True, exist_ok=True)
-    base_hash = hashlib.md5()      # hash of the no-swap reconstruction (== Alex's file)
+    base_hash = hashlib.md5()      # hash of the no-swap reconstruction (== original corpus)
     total = swapped = 0
     with open(OUT, "w", encoding="utf-8") as out:
         for src in ORDER:
@@ -107,7 +109,7 @@ def main() -> None:
     print(f"total lines:   {total:,}")
     print(f"lines swapped: {swapped:,}  (expected {len(swaps):,})")
     print(f"base md5 (no-swap reconstruction): {base_hash.hexdigest()}")
-    print("  -> compare to: ssh babylm 'md5sum ~/git/alex/babylm25/data/bb26_en.train'")
+    print("  -> compare to `md5sum` of your unmodified BabyLM-2026 corpus")
     print(f"output -> {OUT}  ({OUT.stat().st_size/1e6:.1f} MB)")
     if swapped != len(swaps):
         raise SystemExit("ERROR: not every rewrite was applied — check line indices.")

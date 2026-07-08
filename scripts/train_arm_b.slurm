@@ -18,7 +18,7 @@
 
 set -euo pipefail
 source ~/gpt2_env/bin/activate   # dedicated env (NOT the shared ~/babylm_env)
-cd ~/git/deep/babylm-2026
+cd "${SLURM_SUBMIT_DIR:-.}"   # run from the repo root you sbatch from
 export HF_HUB_OFFLINE=1   # use the pre-downloaded baseline dir; no network on compute
 
 python scripts/train_gpt2.py \

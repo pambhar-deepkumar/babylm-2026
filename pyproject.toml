@@ -1,8 +1,9 @@
 [project]
 name = "babylm-2026"
 version = "0.1.0"
-description = "BabyLM 2026 Challenge submission — TUM LLM Practical Course"
+description = "Register/complexity simplification and age-of-acquisition analysis on the BabyLM 2026 Strict-Small corpus"
 requires-python = ">=3.11"
+license = { text = "MIT" }
 authors = [
     { name = "Deep Pambhar" },
     { name = "Alessio Piroli" },
@@ -15,6 +16,10 @@ dependencies = [
     "datasets",
     "requests",
     "spacy",
+    "torch",
+    "transformers",
+    "statsmodels",
+    "lemminflect",
     "macro-etym @ git+https://github.com/JonathanReeve/macro-etym",
 ]
 
