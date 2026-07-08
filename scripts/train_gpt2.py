@@ -23,6 +23,7 @@ Example:
 from __future__ import annotations
 
 import argparse
+import os
 from itertools import chain
 
 from datasets import load_dataset
@@ -31,12 +32,38 @@ from transformers import (
     AutoModelForCausalLM,
     AutoTokenizer,
     Trainer,
+    TrainerCallback,
     TrainingArguments,
     default_data_collator,
     set_seed,
 )
 
 BASELINE = "BabyLM-community/BabyLM-2026-Baseline-GPT2-Strict-Small"
+
+# Learning-trajectory checkpoints, expressed as *tokens seen* (millions). These
+# mirror the official Arm A baseline's chck_1M..chck_100M revisions and extend a
+# few points into the tail of the 20-epoch run, so an A/B/C/D acquisition (AoA)
+# curve can be plotted on an identical x-axis. Full checkpoints (optimizer state
+# included) are saved at each — the callback below converts these to global steps.
+# Override for testing/tuning via env: MILESTONE_TOKENS_M="0.001,0.002" (millions).
+_DEFAULT_MILESTONES = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
+                       20, 30, 40, 50, 60, 70, 80, 90, 100,
+                       150, 200, 250]
+_env_milestones = os.environ.get("MILESTONE_TOKENS_M")
+MILESTONE_TOKENS_M = ([float(x) for x in _env_milestones.split(",")]
+                      if _env_milestones else _DEFAULT_MILESTONES)
+
+
+class MilestoneSaver(TrainerCallback):
+    """Force a full checkpoint save at a fixed set of global steps."""
+
+    def __init__(self, target_steps: set[int]):
+        self.targets = target_steps
+
+    def on_step_end(self, args, state, control, **kwargs):
+        if state.global_step in self.targets:
+            control.should_save = True
+        return control
 
 
 def parse_args() -> argparse.Namespace:
@@ -56,6 +83,10 @@ def parse_args() -> argparse.Namespace:
     p.add_argument("--seed", type=int, default=42)
     p.add_argument("--bf16", action="store_true")
     p.add_argument("--num_proc", type=int, default=8)
+    p.add_argument("--save_milestones", action="store_true",
+                   help="save full trajectory checkpoints at the AoA token milestones "
+                        "(for A/B/C/D trajectory runs); off = only the final model is saved "
+                        "(for cheap error-bar seed runs)")
     return p.parse_args()
 
 
@@ -93,6 +124,24 @@ def main() -> None:
     lm = tokenized.map(group, batched=True, num_proc=args.num_proc)
     print(f"train blocks: {len(lm['train'])} x {args.seq_len} tokens")
 
+    callbacks = []
+    if args.save_milestones:
+        # Trajectory runs: one optimizer step consumes
+        #   per_device_batch * seq_len * grad_accum * world_size  tokens.
+        # Convert each token milestone to the global step it lands on.
+        world_size = int(os.environ.get("WORLD_SIZE", "1"))
+        tokens_per_step = args.per_device_batch * args.seq_len * args.grad_accum * world_size
+        target_steps = sorted({max(1, round(m * 1_000_000 / tokens_per_step))
+                               for m in MILESTONE_TOKENS_M})
+        print(f"milestone save steps ({tokens_per_step} tok/step): {target_steps}")
+        callbacks.append(MilestoneSaver(set(target_steps)))
+        # callback drives saving; keep all checkpoints (no total_limit) so the
+        # full trajectory survives, and keep optimizer state (no save_only_model).
+        save_strategy = "no"
+    else:
+        # Error-bar seed runs: only the final model is needed.
+        save_strategy = "no"
+
     targs = TrainingArguments(
         output_dir=args.output_dir,
         overwrite_output_dir=True,
@@ -107,8 +156,7 @@ def main() -> None:
         seed=args.seed,
         bf16=args.bf16,
         logging_steps=50,
-        save_strategy="epoch",
-        save_total_limit=3,
+        save_strategy=save_strategy,
         eval_strategy="epoch" if args.valid_file else "no",
         report_to="none",
     )
@@ -119,6 +167,7 @@ def main() -> None:
         train_dataset=lm["train"],
         eval_dataset=lm.get("validation"),
         data_collator=default_data_collator,
+        callbacks=callbacks,
     )
     trainer.train()
     trainer.save_model(args.output_dir)

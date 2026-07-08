@@ -60,10 +60,30 @@ PROMPTS = {
         "plain everyday synonym means exactly the same thing. Do not add or remove any "
         "facts. Reply with only the rewritten text."
     ),
+    # register_strong (Arm D): the aggressive end of the register spectrum. Same axis as
+    # Arm C (lexical register, syntax untouched) but dialled up — swap EVERY Latinate word,
+    # accept rough synonyms, prefer phrasal verbs. Trades a little precision for a bigger
+    # register shift. Still keeps structure, length, and facts (names/places/numbers) fixed,
+    # so A -> C -> D stays a clean vocabulary-only dose-response.
+    "register_strong": (
+        "You rewrite text into the plainest possible English, using only the simple, "
+        "everyday words a young child would know. Replace every formal, literary, or "
+        "Latinate word with its most common plain equivalent, and prefer short "
+        "Anglo-Saxon words and phrasal verbs (for example: require -> need, obtain -> "
+        "get, demonstrate -> show, sufficient -> enough, numerous -> many, tolerate -> "
+        "put up with, assist -> help, comprehend -> understand, purchase -> buy, "
+        "approximately -> about, additional -> more). Swap a word even when the plain "
+        "version is only roughly equivalent, as long as the sentence still means the "
+        "same thing overall. Keep the sentence's structure and length the same: do not "
+        "split, shorten, reorder, or change the grammar. Keep all names, places, and "
+        "numbers exactly as written, and do not add or remove facts. Reply with only "
+        "the rewritten text."
+    ),
 }
 CKPTS = {
     "simplify": Path("data/derived/rewrites.jsonl"),
     "register": Path("data/derived/rewrites_register.jsonl"),
+    "register_strong": Path("data/derived/rewrites_register_strong.jsonl"),
 }
 
 # Set per --variant in main(); module-level defaults keep the helpers importable.
