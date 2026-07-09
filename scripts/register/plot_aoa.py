@@ -1,10 +1,10 @@
 """Plot the AoA / acquisition-trajectory figures from the harvested surprisal CSVs.
 
-Reads results/aoa/traj_{a,b,c,d}_surprisal.csv and writes two figures:
-  figures/aoa_trajectory.png  — Latinate surprisal vs tokens seen, per arm (dose ladder)
-  figures/aoa_gap.png         — Latinate-Germanic gap vs tokens seen, per arm
+Reads results/register/aoa/traj_{a,b,c,d}_surprisal.csv and writes two figures:
+  figures/register/aoa_trajectory.png  — Latinate surprisal vs tokens seen, per arm (dose ladder)
+  figures/register/aoa_gap.png         — Latinate-Germanic gap vs tokens seen, per arm
 
-    python scripts/plot_aoa.py --indir results/aoa --outdir figures
+    python scripts/register/plot_aoa.py --indir results/register/aoa --outdir figures/register
 """
 from __future__ import annotations
 
@@ -38,8 +38,8 @@ def load(indir: Path, key: str):
 
 def main() -> None:
     ap = argparse.ArgumentParser()
-    ap.add_argument("--indir", default="results/aoa")
-    ap.add_argument("--outdir", default="figures")
+    ap.add_argument("--indir", default="results/register/aoa")
+    ap.add_argument("--outdir", default="figures/register")
     args = ap.parse_args()
     indir, outdir = Path(args.indir), Path(args.outdir)
     outdir.mkdir(parents=True, exist_ok=True)

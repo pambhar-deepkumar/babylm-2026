@@ -15,10 +15,10 @@ the ~2.9% highest-complexity lines differs** between arms.
   D (−18pp) 3.73 bits**, while Germanic words are unaffected.
 
 So the manipulation *provably* reshapes what the model learns at the vocabulary level; it just does not
-transfer to grammatical benefit. See [`docs/register-simplification-results.md`](docs/register-simplification-results.md)
-and [`results/aoa/ANALYSIS.md`](results/aoa/ANALYSIS.md) for the full write-ups.
+transfer to grammatical benefit. See [`docs/register/register-simplification-results.md`](docs/register/register-simplification-results.md)
+and [`results/register/aoa/ANALYSIS.md`](results/register/aoa/ANALYSIS.md) for the full write-ups.
 
-![AoA gap dose-response](figures/aoa_gap.png)
+![AoA gap dose-response](figures/register/aoa_gap.png)
 
 ## The arms
 
@@ -34,13 +34,16 @@ differs (base reconstruction is byte-identical across arms).
 
 ## Repository layout
 
+The repo is organized **by front** — each contributor's work lives under a same-named subfolder within
+each top-level directory, so fronts stay isolated. This is the `register` front:
+
 ```
-src/babylm_2026/   etymology labeller (Germanic vs Latinate) + register probe
-scripts/           select → rewrite → assemble → measure → train → eval → AoA-harvest → plot
-notebooks/         exploratory analysis (corpus baseline, confound checks, swap dictionary)
-docs/              write-ups (methods, results, pivot rationale)
-results/aoa/       per-checkpoint surprisal CSVs, AoA figures, ANALYSIS.md
-figures/           generated figures
+src/babylm_2026/register/   etymology labeller (Germanic vs Latinate) + register probe
+scripts/register/           select → rewrite → assemble → measure → train → eval → AoA-harvest → plot
+notebooks/register/         exploratory analysis (corpus baseline, confound checks, swap dictionary)
+docs/register/              write-ups — see docs/register/README.md for an index
+results/register/aoa/       per-checkpoint surprisal CSVs, AoA figures, ANALYSIS.md
+figures/register/           generated figures
 ```
 
 `data/`, `models/`, `checkpoints/`, weights, and `results/raw/` are gitignored — large artefacts stay
@@ -67,23 +70,23 @@ read from the OS keychain at runtime and is never stored in the repo.
 
 ```bash
 # 1. select the high-complexity lines to rewrite
-python scripts/build_manifest.py
+python scripts/register/build_manifest.py
 # 2. rewrite them (--variant simplify = Arm B, register = Arm C/D)
-python scripts/rewrite_corpus.py --variant register
+python scripts/register/rewrite_corpus.py --variant register
 # 3. assemble the arm corpus (base reconstruction is checksum-verified against the original)
-python scripts/make_simplified_corpus.py --variant register
+python scripts/register/make_simplified_corpus.py --variant register
 # 4. manipulation check (readability + Latinate-share shift)
-python scripts/measure_simplification.py
+python scripts/register/measure_simplification.py
 # 5. train an arm from scratch (official 2026 GPT-2 recipe); train_traj.slurm adds AoA checkpoints
-python scripts/train_gpt2.py --train_file data/bb26_register.train --output_dir output/arm_c ...
+python scripts/register/train_gpt2.py --train_file data/bb26_register.train --output_dir output/arm_c ...
 # 6. evaluate with the BabyLM eval pipeline (BLiMP headline)
 # 7. AoA: build the fixed probe set, harvest per-checkpoint surprisal, plot
-python scripts/build_aoa_probes.py --corpus data/bb26_en.train --k 30
-python scripts/harvest_surprisal.py --arm_dir output/traj_c --arm_name C --out results/aoa/traj_c_surprisal.csv
-python scripts/plot_aoa.py --indir results/aoa --outdir figures
+python scripts/register/build_aoa_probes.py --corpus data/bb26_en.train --k 30
+python scripts/register/harvest_surprisal.py --arm_dir output/traj_c --arm_name C --out results/register/aoa/traj_c_surprisal.csv
+python scripts/register/plot_aoa.py --indir results/register/aoa --outdir figures/register
 ```
 
-`scripts/*.slurm` are example [LRZ](https://doku.lrz.de/) job configs; adapt the partitions and
+`scripts/register/*.slurm` are example [LRZ](https://doku.lrz.de/) job configs; adapt the partitions and
 environment to your cluster.
 
 ## License

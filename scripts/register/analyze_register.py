@@ -6,7 +6,7 @@ Reads data/derived/probe/{trajectory.csv, pairs_chck_*.csv} and writes:
   - figures/register_trajectory.png        : intercept and slope across training.
   - data/derived/probe/RESULTS.md          : the numbers in prose.
 
-Usage: PYTHONPATH=src python scripts/analyze_register.py
+Usage: PYTHONPATH=src python scripts/register/analyze_register.py
 """
 
 from __future__ import annotations

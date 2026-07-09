@@ -10,8 +10,8 @@ content words labelled Latinate vs Germanic, via the etymology labeller),
 mean words/line.
 
 Usage:
-  PYTHONPATH=src python scripts/measure_simplification.py                   # Arm B
-  PYTHONPATH=src python scripts/measure_simplification.py --variant register  # Arm C
+  PYTHONPATH=src python scripts/register/measure_simplification.py                   # Arm B
+  PYTHONPATH=src python scripts/register/measure_simplification.py --variant register  # Arm C
 """
 
 from __future__ import annotations

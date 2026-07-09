@@ -7,11 +7,11 @@
 
 # Harvest per-word surprisal across one arm's 22 milestone checkpoints (AoA).
 # Pass ARM_DIR / ARM_NAME / OUT via --export:
-#   sbatch --job-name harv_a --export=ALL,ARM_DIR=output/traj_a,ARM_NAME=A,OUT=results/aoa/traj_a_surprisal.csv scripts/harvest_traj.slurm
+#   sbatch --job-name harv_a --export=ALL,ARM_DIR=output/traj_a,ARM_NAME=A,OUT=results/register/aoa/traj_a_surprisal.csv scripts/register/harvest_traj.slurm
 set -euo pipefail
 source ~/gpt2_env/bin/activate   # example env; point at your own venv
 cd "${SLURM_SUBMIT_DIR:-.}"       # run from the repo root you sbatch from
 export HF_HUB_OFFLINE=1
-python scripts/harvest_surprisal.py --arm_dir "$ARM_DIR" --arm_name "$ARM_NAME" \
+python scripts/register/harvest_surprisal.py --arm_dir "$ARM_DIR" --arm_name "$ARM_NAME" \
   --probes data/aoa_probes.json --out "$OUT"
 echo "HARVEST DONE -> $OUT"

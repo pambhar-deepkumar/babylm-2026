@@ -13,13 +13,13 @@
 # NB space: ~22 full checkpoints x ~1.2 GB = ~26 GB per arm. Run arms SERIALLY
 # and back up + prune each arm's intermediates before starting the next.
 #
-#   sbatch --job-name traj_b --export=ALL,CORPUS=data/bb26_simplified.train,OUT=output/traj_b,SEED=42 scripts/train_traj.slurm
+#   sbatch --job-name traj_b --export=ALL,CORPUS=data/bb26_simplified.train,OUT=output/traj_b,SEED=42 scripts/register/train_traj.slurm
 set -euo pipefail
 source ~/gpt2_env/bin/activate   # example env; point at your own venv
 cd "${SLURM_SUBMIT_DIR:-.}"       # run from the repo root you sbatch from
 export HF_HUB_OFFLINE=1
 echo "CORPUS=$CORPUS OUT=$OUT SEED=$SEED (trajectory / milestones on)"
-python scripts/train_gpt2.py \
+python scripts/register/train_gpt2.py \
   --train_file "$CORPUS" --model_path baseline_gpt2_2026 \
   --output_dir "$OUT" --epochs 20 --lr 5e-4 --per_device_batch 32 \
   --grad_accum 1 --seq_len 1024 --seed "$SEED" --bf16 --save_milestones

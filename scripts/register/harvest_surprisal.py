@@ -5,9 +5,9 @@ surprisal (bits) of every target word over its fixed probe contexts, then write
 a tidy CSV: one row per (checkpoint, word). Aggregation into Germanic-vs-Latinate
 curves and the human-AoA correlation happens downstream from this CSV.
 
-    python scripts/harvest_surprisal.py \
+    python scripts/register/harvest_surprisal.py \
         --arm_dir output/traj_a --arm_name A \
-        --probes data/aoa_probes.json --out results/aoa/traj_a_surprisal.csv
+        --probes data/aoa_probes.json --out results/register/aoa/traj_a_surprisal.csv
 
 Surprisal of a target word = -log2 p(word tokens | left context), summed over the
 word's sub-word tokens, averaged over its probe contexts. Lower = better acquired.

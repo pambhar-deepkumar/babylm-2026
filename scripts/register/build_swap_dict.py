@@ -15,7 +15,7 @@ from pathlib import Path
 
 import lemminflect
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 SRC = ROOT / "data" / "babylm_2026" / "strict_small"
 OUT = ROOT / "data" / "swapped" / "strict_small"
 OUT.mkdir(parents=True, exist_ok=True)

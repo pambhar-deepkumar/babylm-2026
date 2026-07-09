@@ -12,9 +12,9 @@ Two treatments via --variant (each writes its own checkpoint):
 
 Key from the keychain. Run:
   OPENROUTER_API_KEY=$(security find-generic-password -s "llmpractical-course-api-key" -w) \
-  PYTHONPATH=src python scripts/rewrite_corpus.py                       # Arm B, full run
-  ... scripts/rewrite_corpus.py --variant register                     # Arm C, full run
-  ... scripts/rewrite_corpus.py --variant register --limit 200         # smoke test
+  PYTHONPATH=src python scripts/register/rewrite_corpus.py                       # Arm B, full run
+  ... scripts/register/rewrite_corpus.py --variant register                     # Arm C, full run
+  ... scripts/register/rewrite_corpus.py --variant register --limit 200         # smoke test
 """
 
 from __future__ import annotations

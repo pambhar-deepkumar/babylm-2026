@@ -7,7 +7,7 @@
 
 # Train GPT-2 on the register-simplified corpus (Arm B), matching the official
 # 2026 Strict-Small baseline recipe. Run from the project root on LRZ:
-#   sbatch scripts/train_arm_b.slurm
+#   sbatch scripts/register/train_arm_b.slurm
 #
 # One-time prep on the LOGIN node (compute nodes may have no internet) — fetch
 # the baseline config + tokenizer once into a local dir:
@@ -21,7 +21,7 @@ source ~/gpt2_env/bin/activate   # dedicated env (NOT the shared ~/babylm_env)
 cd "${SLURM_SUBMIT_DIR:-.}"   # run from the repo root you sbatch from
 export HF_HUB_OFFLINE=1   # use the pre-downloaded baseline dir; no network on compute
 
-python scripts/train_gpt2.py \
+python scripts/register/train_gpt2.py \
   --train_file data/bb26_simplified.train \
   --model_path baseline_gpt2_2026 \
   --output_dir output/arm_b_simplified \

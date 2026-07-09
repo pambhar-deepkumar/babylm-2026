@@ -17,8 +17,8 @@ Output (scp to the cluster's data/ dir):
   --variant register           -> data/bb26_register.train    (Arm C)
 
 Usage:
-  PYTHONPATH=src python scripts/make_simplified_corpus.py
-  PYTHONPATH=src python scripts/make_simplified_corpus.py --variant register
+  PYTHONPATH=src python scripts/register/make_simplified_corpus.py
+  PYTHONPATH=src python scripts/register/make_simplified_corpus.py --variant register
 """
 
 from __future__ import annotations

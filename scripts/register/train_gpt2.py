@@ -13,7 +13,7 @@ AdamW, lr 5e-4, cosine schedule, 20 epochs, effective batch 32768 tokens
 (32 sequences x 1024), seed 42.
 
 Example:
-    python scripts/train_gpt2.py \
+    python scripts/register/train_gpt2.py \
         --train_file data/bb26_simplified.train \
         --model_path baseline_gpt2_2026 \
         --output_dir output/arm_b_simplified \

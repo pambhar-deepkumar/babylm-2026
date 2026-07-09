@@ -163,8 +163,8 @@ are scoped out for cost or access reasons:
    Latinate layer starting far worse and catching up late (gap 6.78 → 2.22 bits over training). The
    register treatments **dose-dependently slow Latinate acquisition** — final Latinate−Germanic gap
    A 2.22 < C 3.14 (−5.5 pp Latinate) < D 3.73 (−18 pp Latinate), monotonic, while Germanic stays flat
-   (~8.7–9.0 bits) since those words were never removed. See `figures/aoa_trajectory.png`,
-   `figures/aoa_gap.png`.
+   (~8.7–9.0 bits) since those words were never removed. See `figures/register/aoa_trajectory.png`,
+   `figures/register/aoa_gap.png`.
 
 **Takeaway:** Lowering register/complexity of the hard slice of the corpus does not buy
 sample efficiency for grammar (BLiMP) under a controlled, multi-seed comparison — **but it is not

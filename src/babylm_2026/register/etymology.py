@@ -230,7 +230,7 @@ def build_wordlist(
 # Calibrated and validated in scripts/etymdb_label*.py (precision 98.9% vs the
 # EtymoLink gold; Latinate token coverage 0.42% -> ~10%).
 
-_REPO_ROOT = Path(__file__).resolve().parents[2]
+_REPO_ROOT = Path(__file__).resolve().parents[3]
 _ETYMDB_DIR = _REPO_ROOT / "data" / "external" / "etymdb"
 _LLM_LABELS_CSV = _REPO_ROOT / "data" / "derived" / "llm_labels.csv"
 

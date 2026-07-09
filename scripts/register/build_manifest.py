@@ -12,7 +12,7 @@ Output: data/derived/rewrite_manifest.csv with one row per selected line
 (source, line_idx, text, fk_raw, fk_masked, n_words). line_idx is the 0-based
 line number in the source file, so the assembler can map rewrites back exactly.
 
-Usage: PYTHONPATH=src python scripts/build_manifest.py
+Usage: PYTHONPATH=src python scripts/register/build_manifest.py
 """
 
 from __future__ import annotations

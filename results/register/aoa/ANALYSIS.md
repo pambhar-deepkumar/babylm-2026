@@ -59,9 +59,9 @@ a real, mechanistic, dose-dependent finding.
 
 ```
 # 1. build the fixed probe set from the original corpus
-python scripts/build_aoa_probes.py --corpus data/bb26_en.train --k 30
+python scripts/register/build_aoa_probes.py --corpus data/bb26_en.train --k 30
 # 2. harvest surprisal over an arm's 22 checkpoints (GPU)
-sbatch --export=ALL,ARM_DIR=output/traj_a,ARM_NAME=A,OUT=results/aoa/traj_a_surprisal.csv scripts/harvest_traj.slurm
+sbatch --export=ALL,ARM_DIR=output/traj_a,ARM_NAME=A,OUT=results/register/aoa/traj_a_surprisal.csv scripts/register/harvest_traj.slurm
 # 3. plot
-python scripts/plot_aoa.py --indir results/aoa --outdir figures
+python scripts/register/plot_aoa.py --indir results/register/aoa --outdir figures/register
 ```

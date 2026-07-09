@@ -9,7 +9,7 @@ is reused across all arms (A/B/C/D) so surprisal curves are directly comparable
 Output: data/aoa_probes.json  (list of {word, klass, pair_id, ctx_left, target})
 
 Run once on the login node:
-    python scripts/build_aoa_probes.py --corpus data/bb26_en.train --k 30
+    python scripts/register/build_aoa_probes.py --corpus data/bb26_en.train --k 30
 """
 from __future__ import annotations
 

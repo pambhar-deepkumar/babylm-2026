@@ -1,5 +1,5 @@
 """Regenerate the etymology word lists with the combined labeller in
-babylm_2026.etymology (LLM -> EtymDB -> lemma -> affix), proper nouns filtered.
+babylm_2026.register.etymology (LLM -> EtymDB -> lemma -> affix), proper nouns filtered.
 
 Writes:
   data/derived/etymology_labels_full.csv      every corpus type, fully annotated
@@ -11,9 +11,9 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "src"))
-from babylm_2026.etymology import build_etymology_wordlist  # noqa: E402
+from babylm_2026.register.etymology import build_etymology_wordlist  # noqa: E402
 
 CORPUS = ROOT / "data" / "babylm_2026" / "strict_small"
 DERIVED = ROOT / "data" / "derived"
