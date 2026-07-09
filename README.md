@@ -41,7 +41,7 @@ each top-level directory, so fronts stay isolated. This is the `register` front:
 src/babylm_2026/register/   etymology labeller (Germanic vs Latinate) + register probe
 scripts/register/           select → rewrite → assemble → measure → train → eval → AoA-harvest → plot
 notebooks/register/         exploratory analysis (corpus baseline, confound checks, swap dictionary)
-docs/register/              write-ups — see docs/register/README.md for an index
+docs/register/              final results write-up
 results/register/aoa/       per-checkpoint surprisal CSVs, AoA figures, ANALYSIS.md
 figures/register/           generated figures
 ```
