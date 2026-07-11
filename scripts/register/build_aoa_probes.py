@@ -18,7 +18,7 @@ import json
 import re
 from pathlib import Path
 
-# Curated (Latinate, Germanic) synonym pairs — same list as build_swap_dict.py.
+# Curated (Latinate, Germanic) synonym pairs (meaning-preserving, low-polysemy).
 PAIRS = [
     ("comprehend", "understand"), ("acquire", "get"), ("obtain", "get"),
     ("require", "need"), ("desire", "want"), ("provide", "give"),

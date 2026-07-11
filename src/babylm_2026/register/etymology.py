@@ -1,8 +1,8 @@
 """Per-word etymology labelling: Germanic vs Latinate.
 
-This is the shared labeller used by both the minimal-pair probe and the
-age-of-acquisition (AoA) analysis. It reuses the machinery calibrated in
-notebooks 01 and 03:
+This is the shared Germanic/Latinate labeller used by the age-of-acquisition
+(AoA) analysis and the corpus register labelling. It reuses the machinery
+calibrated in notebooks 01 and 03:
 
   - EtymoLink (Gao & Sun, ACL 2024) as the gold source. Origin is buried in a
     derivation chain in the `sorted` column, e.g. ``(ask_E, ascian_OE);...``;
