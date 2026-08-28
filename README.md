@@ -46,22 +46,41 @@ results/register/aoa/       per-checkpoint surprisal CSVs, AoA figures, ANALYSIS
 figures/register/           generated figures
 ```
 
+Shared across fronts: `babylm-eval/` (official eval pipeline, git submodule), `scripts/evaluate.sh`
+and the `Makefile` that drives it, and [`docs/eval.md`](docs/eval.md).
+
 `data/`, `models/`, `checkpoints/`, weights, and `results/raw/` are gitignored — large artefacts stay
 off the repo.
 
 ## Setup
 
 ```bash
+git clone --recursive https://github.com/pambhar-deepkumar/babylm-2026.git
+cd babylm-2026
 python -m venv .venv && source .venv/bin/activate
-pip install -e .
+make setup
 ```
+
+`make setup` initialises the eval submodule and installs all requirements. If you cloned without
+`--recursive`, just run `make setup` — it handles the submodule.
 
 ## Data
 
 The corpus is **not redistributed here** — obtain it from HuggingFace:
 [`BabyLM-community/BabyLM-2026-Strict-Small`](https://huggingface.co/datasets/BabyLM-community/BabyLM-2026-Strict-Small),
-and place the English strict-small `.train` file at `data/bb26_en.train`. Evaluation uses the
-[BabyLM evaluation pipeline](https://github.com/babylm/evaluation-pipeline-2025).
+and place the English strict-small `.train` file at `data/bb26_en.train`.
+
+## Evaluation
+
+Checkpoints are scored with the official BabyLM 2026 pipeline, vendored as a git submodule at
+`babylm-eval/` and pinned to a commit so runs stay comparable:
+
+```bash
+make eval MODEL=<hf_id_or_local_path> BACKEND=causal
+```
+
+The arms here are GPT-2, hence `BACKEND=causal`. See [`docs/eval.md`](docs/eval.md) for the other
+backends and for how to bump the pinned eval version.
 
 ## Reproduce
 
@@ -79,7 +98,8 @@ python scripts/register/make_simplified_corpus.py --variant register
 python scripts/register/measure_simplification.py
 # 5. train an arm from scratch (official 2026 GPT-2 recipe); train_traj.slurm adds AoA checkpoints
 python scripts/register/train_gpt2.py --train_file data/bb26_register.train --output_dir output/arm_c ...
-# 6. evaluate with the BabyLM eval pipeline (BLiMP headline)
+# 6. evaluate (BLiMP headline)
+make eval MODEL=output/arm_c BACKEND=causal
 # 7. AoA: build the fixed probe set, harvest per-checkpoint surprisal, plot
 python scripts/register/build_aoa_probes.py --corpus data/bb26_en.train --k 30
 python scripts/register/harvest_surprisal.py --arm_dir output/traj_c --arm_name C --out results/register/aoa/traj_c_surprisal.csv
