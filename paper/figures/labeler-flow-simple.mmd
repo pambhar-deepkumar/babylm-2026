@@ -1,0 +1,27 @@
+---
+title: "How each word gets sorted (plain-English version)"
+---
+flowchart TD
+    W([A word from the text<br/>example: education]) --> Q1{Is it one of our few<br/>hand-fixed words?}
+    Q1 -->|yes| LAB[It gets a label:<br/>FANCY or PLAIN]
+    Q1 -->|no| Q2{Did our AI helper<br/>already tag it?}
+    Q2 -->|yes| LAB
+    Q2 -->|no| Q3{Is it a filler word or junk?<br/>the, and, um, gibberish}
+    Q3 -->|yes| SKIP[Skipped<br/>left without a label]
+    Q3 -->|no| Q4{Is it in our big<br/>word-origin dictionary?}
+    Q4 -->|yes| LAB
+    Q4 -->|no| Q5{Is it just a plural or past<br/>tense of a word we know?<br/>houses then house}
+    Q5 -->|yes| LAB
+    Q5 -->|no| Q6{Does it END like a fancy word?<br/>-tion, -ity, -ous}
+    Q6 -->|yes| FAN[It gets a label:<br/>FANCY]
+    Q6 -->|no| SKIP
+
+    SKIP ~~~ KEY
+    KEY["<b>What the labels mean</b><br/>FANCY = Latin / French roots &#40;education, liberty&#41;<br/>PLAIN = old English roots &#40;house, eat&#41;<br/>SKIP = we cannot tell, so we leave it out"]
+
+    classDef good fill:#d4f4d4,stroke:#2a7,color:#000;
+    classDef skip fill:#eee,stroke:#999,color:#000;
+    classDef key fill:#fffbe6,stroke:#e0c000,color:#000;
+    class LAB,FAN good;
+    class SKIP skip;
+    class KEY key;
