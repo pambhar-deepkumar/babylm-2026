@@ -60,6 +60,10 @@ parser.add_argument("--soft", action="store_true", help="Soft mask")
 parser.add_argument("--flops", action="store_true", help="Compute FLOPs")
 parser.add_argument("--mask_decay", type=float, default=0.0, help="Mask decay. e.g. 0.1 means decay by 0.1 \
                     over the course of training")
+parser.add_argument("--max_steps", type=int, default=None, help="If set, caps total_steps at this value \
+                    (LR schedule, mask decay, and checkpoint milestones all scale to the capped budget) and \
+                    stops training early once reached. For iso-token-budget comparisons across tokenizer \
+                    vocab sizes, where --epochs alone gives different total token counts per vocab size.")
 
 def evaluate(model, tokenizer, dataloader, args):
     model.eval()
@@ -479,6 +483,11 @@ def train(args, model, tokenizer, train_dataloader, eval_dataloader):
                 if args.mask_decay > 0:
                     args.mlm_prob = args.mlm_prob - (args.mask_decay/args.total_steps)
 
+                if global_step >= args.total_steps:
+                    break
+            if global_step >= args.total_steps:
+                break
+
     metrics = evaluate(model, tokenizer, eval_dataloader, args)
     print(f"Final eval accuracy: {metrics['acc']:.2f}, Loss: {metrics['loss']:.4f}", flush=True)
 
@@ -584,6 +593,8 @@ def main():
 
     args.dataset_len_tokens = sum(args.tokens_per_1000)
     args.total_steps = calculate_total_steps(args)
+    if args.max_steps is not None:
+        args.total_steps = min(args.total_steps, args.max_steps)
 
     args.is_strict_small = (args.dataset_len_tokens // 10e6) < 10 # assuming there are fewer than 10 tokens per word
 
