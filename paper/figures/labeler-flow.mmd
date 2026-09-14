@@ -1,0 +1,27 @@
+---
+title: "Etymological labelling cascade (checked in order of decreasing confidence)"
+---
+flowchart TD
+    W([Corpus word]) --> O{Manual override?<br/>hand-verified fixes for<br/>known homograph errors}
+    O -->|yes| R1[Latinate / Germanic]
+    O -->|no| L{In the LLM-labelled set?<br/>frequent words absent<br/>from EtymDB}
+    L -->|yes| R2[Latinate / Germanic]
+    L -->|no| X{Stop-word or token artifact?<br/>function words, subtitle noise}
+    X -->|yes| OTH[Unlabelled &#40;other&#41;]
+    X -->|no| E{Listed in EtymDB?<br/>Wiktionary etymology graph}
+    E -->|yes| R3[Latinate / Germanic]
+    E -->|no| LM{Lemma in EtymDB?<br/>inflected form to base form<br/>houses to house}
+    LM -->|yes| R4[Latinate / Germanic]
+    LM -->|no| A{Latinate suffix?<br/>-tion, -ity, -ous}
+    A -->|yes| R5[Latinate]
+    A -->|no| OTH2[Unlabelled &#40;other&#41;]
+
+    OTH2 ~~~ CAP
+    CAP["<b>Figure 1. Etymological labelling cascade.</b><br/>Each corpus word receives a Germanic/Latinate label from the first<br/>matching rule, checked in order of decreasing confidence: manual<br/>overrides; an LLM-labelled set for frequent words absent from EtymDB;<br/>EtymDB ancestry lookup (direct, then via lemma); and a Latinate-suffix<br/>heuristic. Function words, token artifacts, and unresolved words<br/>remain unlabelled."]
+
+    classDef good fill:#d4f4d4,stroke:#2a7,color:#000;
+    classDef skip fill:#eee,stroke:#999,color:#000;
+    classDef caption fill:#fff,stroke:#fff,color:#333;
+    class R1,R2,R3,R4,R5 good;
+    class OTH,OTH2 skip;
+    class CAP caption;

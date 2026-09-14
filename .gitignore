@@ -45,3 +45,6 @@ wandb/
 # HuggingFace caches
 .cache/
 hf_cache/
+
+# Vendored eval harness (external, large)
+babylm-eval/
